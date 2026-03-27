@@ -81,4 +81,4 @@ python sentinel_inference.py
 
 ---
 
-**Built by Cosmix The Boogiemen.**
+**Built for Cosmix by The Boogiemen.**
