@@ -1,0 +1,14 @@
+dataset/
+runs/
+__pycache__/
+*.pt
+*zip*
+*scene*
+*.png
+*.jpg
+!attack_pred.jpg
+!defend_pred.jpg
+!explainable_output.jpg
+!sentinel1_final_output.jpg
+!sentinel2_final_output.jpg
+!yolov8n.pt

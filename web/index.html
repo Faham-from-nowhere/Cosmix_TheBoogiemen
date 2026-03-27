@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O.R.I.O.N. Edge - Zero Server SAR Detection</title>
+    <!-- Load ONNX Runtime Web via JSdelivr CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-container">
+        <header>
+            <h1>O.R.I.O.N. Edge</h1>
+            <p>Zero-Server Optical & Radar Intelligence ONNX Node</p>
+        </header>
+
+        <div class="upload-zone" id="dropArea">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <p>Drag & Drop SAR Imagery or Click</p>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <button id="uploadBtn">Browse Files</button>
+        </div>
+
+        <div class="inference-container" id="inferenceBox">
+            <div class="canvas-wrapper">
+                <canvas id="outputCanvas"></canvas>
+            </div>
+            <div class="status-panel">
+                <div id="statusText">Awaiting Payload...</div>
+                <div class="progress-bar"><div id="progressFill"></div></div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

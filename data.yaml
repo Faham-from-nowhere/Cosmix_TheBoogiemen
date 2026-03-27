@@ -1,0 +1,6 @@
+
+train: C:\Users\mohdf\.gemini\antigravity\scratch\sar_ship_detection\dataset\images\train
+val: C:\Users\mohdf\.gemini\antigravity\scratch\sar_ship_detection\dataset\images\val
+
+nc: 1
+names: ['ship']
