@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Cosmix The Boogiemen - SAR Ship Detection</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+        <style>
+            .reveal h1, .reveal h2, .reveal h3 {
+                text-transform: none;
+            }
+            .img-row {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                margin-top: 20px;
+            }
+            .img-row img {
+                height: 350px;
+                border: 2px solid white;
+                border-radius: 10px;
+            }
+        </style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				
+                <!-- Title Slide -->
+				<section>
+					<h1 style="color: #61dafb;">SAR Ship Detection Pipeline</h1>
+					<h3>Cosmix The Boogiemen</h3>
+					<p>An Explainable, Defended, Edge-Deployed Radar Target Protocol</p>
+				</section>
+
+                <!-- Introduction Slide -->
+				<section>
+					<h2>The Challenge</h2>
+					<ul>
+						<li><b>SAR Imagery</b> is notoriously noisy, saturated with speckle artifacts and false scatterings.</li>
+						<li><b>Target Obfuscation</b>: Small ships blend into background ocean clutter.</li>
+						<li><b>"Black Box" Models</b>: Operators cannot blindly trust AI targeting without understanding *why* a ship was flagged.</li>
+						<li><b>Vulnerability</b>: Typical neural networks collapse helplessly when adversarial noise is injected over the grid.</li>
+					</ul>
+				</section>
+
+                <!-- Phase 1 & 2 -->
+				<section>
+					<h2>Phase 1 & 2: Bulletproof MVP & GAN Engine</h2>
+                    <p>We built a robust <code>YOLOv8-nano</code> detection core.</p>
+					<ul>
+						<li><b>Dataset Generation:</b> Programmatic translation of COCO JSON to normalized YOLO.</li>
+						<li><b>Generative Attack:</b> Built a PyTorch Deep Convolutional GAN (DCGAN) to synthesize raw 64x64 adversarial ship footprints.</li>
+						<li><b>Training Enhancement:</b> Seamlessly injected these synthesized chips into the base data fold to artificially stretch the dataset fidelity.</li>
+					</ul>
+				</section>
+
+                <!-- Phase 3 -->
+				<section>
+					<h2>Phase 3: Concept-Based Explainability</h2>
+					<p>We stripped away the "Black Box" to give humans operators real metrics.</p>
+                    <div class="img-row">
+                        <img src="assets/explainable_output.jpg" alt="Explainability Overlay">
+                    </div>
+                    <ul style="font-size: 0.8em; margin-top: 10px;">
+                        <li>Extracts <b>Radar Cross-Section Intensity</b> (RCS) of targets.</li>
+                        <li>Measures <b>Laplacian Edge Sharpness</b> to verify structural density.</li>
+                    </ul>
+				</section>
+
+                <!-- Phase 4 -->
+				<section>
+					<h2>Phase 4: Zero-Server WebAssembly</h2>
+                    <p>We bypassed entire GPU clouds by squashing the neural net.</p>
+					<ul>
+						<li><b>ONNX Flattening:</b> Converted our trained `best.pt` into an agnostic `.onnx` standalone graph.</li>
+						<li><b>WebAssembly Runtime:</b> Utilized `onnxruntime-web` to execute the raw graph via client CPU inside the browser.</li>
+						<li><b>Glassmorphism Edge Node:</b> Developed a sleek HTML/JS frontend architecture that requires strictly zero backend execution layers.</li>
+					</ul>
+				</section>
+
+                <!-- Phase 5 -->
+				<section>
+					<h2>Phase 5: Adversarial Defense Filter</h2>
+					<p>We instituted a protective spatial shield prior to inference block execution.</p>
+                    <div class="img-row">
+                        <div style="text-align: center;">
+                            <img src="assets/attack_pred.jpg" alt="Undefended Attack">
+                            <p style="font-size: 0.6em;">Undefended Network Collapse</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <img src="assets/defend_pred.jpg" alt="Defended Output">
+                            <p style="font-size: 0.6em;">Adaptive Spatial Filtering Restoration</p>
+                        </div>
+                    </div>
+				</section>
+                
+                <!-- Phase 6 -->
+				<section>
+					<h2>Phase 6: Sentinel Scale Inference</h2>
+					<p>We pushed our nano model seamlessly across massive satellite arrays.</p>
+                    <div class="img-row">
+                        <img src="assets/sentinel2_final_output.jpg" alt="Sentinel S1/S2 Output" style="height: 300px;">
+                    </div>
+                    <ul style="font-size: 0.8em; margin-top: 10px;">
+                        <li>800x800 tiling sliding windows with 100-pixel overlaps.</li>
+                        <li>Global Non-Maximum Suppression (NMS) stitching algorithm.</li>
+                        <li>Total bypass of memory starvation on dense multi-gigabyte matrices.</li>
+                    </ul>
+				</section>
+
+                <!-- Demo Slide -->
+				<section>
+					<h2>Experience it Live! 🚀</h2>
+					<p>Our Zero-Server Edge MVP is deployed locally to WebAssembly.</p>
+                    <br>
+                    <a href="index.html" target="_blank" style="padding: 15px 30px; background-color: #61dafb; color: #1a1a1a; text-decoration: none; border-radius: 8px; font-weight: bold; border: 2px solid white;">Launch Interactive MVP Terminal</a>
+                    <br><br><br>
+                    <h4>Thank You!</h4>
+                    <p style="font-size: 0.6em; color: gray;">Cosmix The Boogiemen Hackathon Project</p>
+				</section>
+
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+                center: true,
+                transition: 'slide'
+			});
+		</script>
+	</body>
+</html>
