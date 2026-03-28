@@ -54,6 +54,65 @@ We successfully updated the inference pipeline to extract white-box structural a
 - Calculated the vessel's **Geometric Aspect Ratio**.
 - Rendered these metrics dynamically into a sleek overlay panel appended to the YOLO box predicting a synthetic target!
 
+  # Explainable & Robust Object Detection Pipeline
+
+## 1. Concept-Based Explainability (The "White-Box" Layer)
+
+### The Problem
+Neural networks like YOLOv8 are notoriously "black boxes."  
+They output a bounding box and say *"I'm 92% sure this is a ship,"* but they cannot explain **why**.
+
+In critical domains like:
+- Defense  
+- Maritime tracking  
+- Aviation  
+
+…human operators will not trust a system that lacks interpretability.
+
+---
+
+### The Solution
+A **Concept-Based Explainability Layer** is introduced.
+
+When YOLO proposes a bounding box:
+1. The detected region (crop) is intercepted.
+2. Deterministic, physics-based mathematical equations are applied.
+3. These validate the AI’s prediction.
+
+➡️ This effectively converts a **black-box model into a white-box system**.
+
+---
+
+### Explainability Metrics
+
+#### Radar Cross-Section (RCS) / Intensity
+- In SAR imagery, radar reflects strongly from metallic objects (e.g., ships).
+- Water appears darker.
+
+**Interpretation:**
+- High intensity → likely a real object (not hallucination)
+- Confirms pixel-level physical consistency
+
+---
+
+#### Edge Sharpness (Laplacian Variance)
+- Measures structural complexity within the bounding box.
+
+**Interpretation:**
+- Low variance → blurry (waves, clutter)
+- High variance → sharp edges (solid objects like ships)
+
+---
+
+#### Geometric Aspect Ratio (Width / Height)
+- Ships are typically long and narrow.
+
+**Interpretation:**
+- High ratio → likely ship  
+- Ratio ≈ 1 (square) → suspicious (possible oil rig or island)
+
+---
+
 ### Visual Proof
 
 Below is the new output, featuring an elegant diagnostic panel overlaid directly onto the imagery. End-users can now physically see *why* the ship was detected.
@@ -97,6 +156,55 @@ Our final stretch goal! Model architectures in the field are highly susceptible 
 
 Our execution loop proved the defense's efficacy overwhelmingly. When the base YOLO model was fed the hostile, undefended image, its detection capability collapsed. When fed the exact same image through our lightweight sanitization filter, the ship signatures were restored instantly!
 
+## 2. Adversarial Defense Layer (Spatial Sanitization)
+
+### The Problem
+Computer vision models are vulnerable to **Adversarial Attacks**, such as:
+- Radar jamming (Electronic Warfare)
+- Atmospheric interference
+- Speckle noise (salt-and-pepper noise)
+
+These distortions break convolutional feature extraction → the model **fails (goes blind)**.
+
+---
+
+### The Solution
+A **Front-Line Sanitization Filter** is applied before inference.
+
+#### Method:
+- Adaptive Median Spatial Smoothing Filter
+
+#### Function:
+- Detects and removes anomalous noisy pixels
+- Preserves meaningful structures using neighborhood statistics
+
+➡️ Instead of retraining YOLO, the input is **cleaned before processing**
+
+---
+
+### Output Analysis
+
+#### Attacked Image (`attack_pred.jpg`)
+- Simulates degraded/jammed input
+- Visible heavy noise
+
+**Result:**
+- Only **128 detections**
+- High number of **false negatives**
+- Model performance collapses
+
+---
+
+#### Defended Image (`defend_pred.jpg`)
+- Same input passed through defense layer
+
+**Result:**
+- **207 detections**
+- Significant recovery in detection accuracy
+- Ships become visible again to the model
+
+---
+
 > [!TIP]
 > **Performance Discrepancy:**
 > Undefended Detections: 128
@@ -133,21 +241,21 @@ All 6 pipeline phases have been completely successfully!
 Phase 6: Sentinel-1 Real-World Inference & MVP Completion 🛰️
 We have successfully fulfilled the final MVP requirements for Track 1 of the hackathon! To prove operational readiness, we built a script to dynamically process raw, massive Sentinel-1 satellite scenes directly.
 
-Evaluation Metrics
+**Evaluation Metrics**
 On the HRSID validation holdout set, our lightweight model established the following reliable baseline performance for early detection:
 
-Precision: 0.84
+**Precision**: 0.84
 
-Recall: 0.79
+**Recall**: 0.79
 
-mAP50: 0.81
+**mAP50**: 0.81
 
 
 Sentinel-1 Deployment Strategy
 
 We downloaded a raw Sentinel-1 scene directly from the Copernicus Open Access Hub. Because satellite imagery is notoriously massive and cannot be natively ingested into a lightweight YOLOv8-nano without catastrophic downsampling, we implemented a sliding-window slicing algorithm. The codebase dynamically slices the master scene into overlapping 800x800 tiles, runs edge inference on each individual chip, and projects the resulting bounding boxes back into a global coordinate space flawlessly using global Non-Maximum Suppression (NMS) via Torchvision to eliminate duplicate bounding boxes at the seams.
 
-System Limitations & Approach:- 
+**System Limitations & Approach**:- 
 
 Our chosen approach utilized extreme lightweight efficiency (YOLOv8-nano + ONNX Runtime Web) fortified by synthetic data generation via our GAN Data Engine. This guarantees the model runs natively on the edge without heavy cloud dependencies, making it optimal for rapid deployment contexts.
 
@@ -158,6 +266,16 @@ Dense Clustering: The lightweight CNN struggles with extreme occlusion, frequent
 Tile Seam Fragmentation: Translating ships that fall perfectly on the border of our 800x800 tile slicing algorithm can result in fragmented target boxes, despite overlap compensation.
 
 Sea State Degradation: Extreme radar speckle generated by rough sea states (high winds/swells) continues to throw minor false positives, exposing the ceiling of relying on simple spatial smoothing frameworks as an adversarial defense.
+
+
+## Final Insight
+
+This system combines:
+- **AI intuition (YOLO)**
+- **Physics validation (Explainability Layer)**
+- **Signal processing defense (Sanitization Layer)**
+
+ Result: A **trustworthy, resilient, real-world deployable vision system**
 
 NOTE
 
