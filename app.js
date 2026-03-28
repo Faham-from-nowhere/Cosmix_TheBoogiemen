@@ -133,8 +133,8 @@ async function runInference(img) {
                         const h = output[3 * numDetections + i];
                         
                         // HACKATHON MVP HOTFIX: Morphological Box Filtering
-                        // Sentinel-1 is 10m/px. A ship will NEVER be 1000m (150px) wide.
-                        if (w > 150 || h > 150 || w < 2 || h < 2) continue; // Ghost Anchor!
+                        // Sentinel-1 is 10m/px. A ship will NEVER be 1000m (100px) wide.
+                        if (w > 40 || h > 40 || w < 2 || h < 2) continue; // Ghost Anchor!
                         
                         // Map 800x800 relative coords back to the HUGE global image coords!
                         const x1_tile = xc - w / 2;
