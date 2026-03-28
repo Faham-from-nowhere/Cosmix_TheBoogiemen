@@ -179,9 +179,10 @@ async function runInference(img) {
              CTX.fillRect(b.x1, b.y1, b.w, b.h);
              // Label text background
              CTX.fillStyle = '#3fb950';
-             CTX.fillRect(b.x1, b.y1 - 25, 95, 25);
+             // Reduced width of background box since text is shorter
+             CTX.fillRect(b.x1, b.y1 - 25, 50, 25);
              CTX.fillStyle = '#fff';
-             CTX.fillText(`SHIP ${(b.conf*100).toFixed(0)}%`, b.x1 + 4, b.y1 - 7);
+             CTX.fillText(`SHIP`, b.x1 + 4, b.y1 - 7);
              CTX.fillStyle = 'rgba(63, 185, 80, 0.2)'; // reset for next box
         });
         
