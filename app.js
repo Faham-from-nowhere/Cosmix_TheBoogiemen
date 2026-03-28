@@ -155,33 +155,16 @@ async function runInference(img) {
         const t1 = performance.now();
         updateStatus(`Decoupling and applying Global NMS. Latency: ${(t1-t0).toFixed(1)}ms...`, 80);
         
-        // GLOBAL NMS: We use Intersection-Over-Minimum-Area (IoMin) rather than pure IoU!
-        // Because the raw ONNX tensor outputs all 3 grid scales simultaneously, ships get surrounded
-        // by concentric boxes of different sizes (e.g. 10x10 and 30x30 around the same ship). 
-        // Pure IoU fails to drop them because their combined area is huge. IoMin guarantees deletion!
+        // GLOBAL NMS: We must stitch the sliding windows together and delete duplicates at the overlap seams!
         allBoxes.sort((a,b) => b.conf - a.conf);
         let finalBoxes = [];
         let marked = new Array(allBoxes.length).fill(false);
-        
-        function getIoMin(b1, b2) {
-            const x_left = Math.max(b1.x1, b2.x1);
-            const y_top = Math.max(b1.y1, b2.y1);
-            const x_right = Math.min(b1.x1 + b1.w, b2.x1 + b2.w);
-            const y_bottom = Math.min(b1.y1 + b1.h, b2.y1 + b2.h);
-            if (x_right <= x_left || y_bottom <= y_top) return 0.0;
-            const intersection = (x_right - x_left) * (y_bottom - y_top);
-            const area1 = b1.w * b1.h;
-            const area2 = b2.w * b2.h;
-            return intersection / Math.min(area1, area2);
-        }
-        
         for(let i=0; i<allBoxes.length; i++) {
             if(marked[i]) continue;
             finalBoxes.push(allBoxes[i]);
             for(let j=i+1; j<allBoxes.length; j++) {
-                 if (getIoMin(allBoxes[i], allBoxes[j]) > 0.3) {
-                     marked[j] = true;
-                 }
+                 // lazy spatial pruning across the entire stitched image
+                 if(Math.abs(allBoxes[i].x1 - allBoxes[j].x1) < 50 && Math.abs(allBoxes[i].y1 - allBoxes[j].y1) < 50) marked[j] = true;
             }
         }
         
