@@ -125,7 +125,7 @@ Our pipeline takes an impossible, massive Sentinel Scene and seamlessly maps eve
 > **Performance Output:**
 > Total unique ships detected are mapped back onto the enormous original array.
 
-![Sentinel Scaled Defense Output](/C:/Users/mohdf/.gemini/antigravity/scratch/sar_ship_detection/sentinel2_final_output.jpg)
+![Sentinel Scaled Defense Output](sentinel2_final_output.jpg)
 
 ### 🎉 Hackathon Complete 
 All 6 pipeline phases have been completely successfully!
