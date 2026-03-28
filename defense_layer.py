@@ -26,6 +26,26 @@ def defense_filter(image):
     """ Lightweight Spatial Smoothing. Median Blur is highly effective against speckle interference. """
     return cv2.medianBlur(image, 5)
 
+def render_filtered_boxes(res, base_img, filename):
+    canvas = base_img.copy()
+    valid_count = 0
+    for box in res[0].boxes:
+        b = box.xyxy[0].cpu().numpy()
+        bx1, by1, bx2, by2 = int(b[0]), int(b[1]), int(b[2]), int(b[3])
+        w_box = bx2 - bx1
+        h_box = by2 - by1
+        
+        # Morphological Filtering (Ghost Anchor Deletion)
+        if w_box > 150 or h_box > 150 or w_box < 2 or h_box < 2:
+            continue
+            
+        valid_count += 1
+        cv2.rectangle(canvas, (bx1, by1), (bx2, by2), (0, 255, 0), 2)
+        cv2.putText(canvas, f"SHIP", (bx1, max(by1-5, 0)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        
+    cv2.imwrite(filename, canvas)
+    return valid_count
+
 def main():
     print("Initializing O.R.I.O.N. Edge Defense Protocol...")
     model = YOLO('runs/detect/train/weights/best.pt')
@@ -51,15 +71,13 @@ def main():
     print("Running inference on DEFENDED, SANITIZED image...")
     res_defend = model(defended, verbose=False, conf=0.01)
     
-    undf_boxes = len(res_attack[0].boxes)
-    def_boxes = len(res_defend[0].boxes)
+    # Render Custom Morphological Bounding Boxes
+    undf_boxes = render_filtered_boxes(res_attack, attacked, 'attack_pred.jpg')
+    def_boxes = render_filtered_boxes(res_defend, defended, 'defend_pred.jpg')
+    
     print(f"False Positives / Missed Detections (Undefended): {undf_boxes}")
     print(f"Restored Signatures (Defended): {def_boxes}")
-    
-    # Highlight performance discrepancy visually
-    res_attack[0].save(filename='attack_pred.jpg')
-    res_defend[0].save(filename='defend_pred.jpg')
-    print("Saved evaluation maps to disk (attack_pred.jpg & defend_pred.jpg). Phase 5 executed.")
+    print("Saved evaluation maps to disk (attack_pred.jpg & defend_pred.jpg). Phase 5 executed cleanly!")
 
 if __name__ == '__main__':
     main()
