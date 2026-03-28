@@ -147,7 +147,8 @@ Sentinel-1 Deployment Strategy
 
 We downloaded a raw Sentinel-1 scene directly from the Copernicus Open Access Hub. Because satellite imagery is notoriously massive and cannot be natively ingested into a lightweight YOLOv8-nano without catastrophic downsampling, we implemented a sliding-window slicing algorithm. The codebase dynamically slices the master scene into overlapping 800x800 tiles, runs edge inference on each individual chip, and projects the resulting bounding boxes back into a global coordinate space flawlessly using global Non-Maximum Suppression (NMS) via Torchvision to eliminate duplicate bounding boxes at the seams.
 
-System Limitations & Approach
+System Limitations & Approach:- 
+
 Our chosen approach utilized extreme lightweight efficiency (YOLOv8-nano + ONNX Runtime Web) fortified by synthetic data generation via our GAN Data Engine. This guarantees the model runs natively on the edge without heavy cloud dependencies, making it optimal for rapid deployment contexts.
 
 However, this topology presents distinct limitations:
