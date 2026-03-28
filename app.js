@@ -155,16 +155,32 @@ async function runInference(img) {
         const t1 = performance.now();
         updateStatus(`Decoupling and applying Global NMS. Latency: ${(t1-t0).toFixed(1)}ms...`, 80);
         
-        // GLOBAL NMS: We must stitch the sliding windows together and delete duplicates at the overlap seams!
+        // GLOBAL NMS: True Intersection-Over-Union (IoU) based NMS to cleanly strip ghost anchors
+        // while preserving tightly packed fleets in harbor areas.
         allBoxes.sort((a,b) => b.conf - a.conf);
         let finalBoxes = [];
         let marked = new Array(allBoxes.length).fill(false);
+        
+        function getIoU(b1, b2) {
+            const x_left = Math.max(b1.x1, b2.x1);
+            const y_top = Math.max(b1.y1, b2.y1);
+            const x_right = Math.min(b1.x1 + b1.w, b2.x1 + b2.w);
+            const y_bottom = Math.min(b1.y1 + b1.h, b2.y1 + b2.h);
+            if (x_right < x_left || y_bottom < y_top) return 0.0;
+            const intersection = (x_right - x_left) * (y_bottom - y_top);
+            const area1 = b1.w * b1.h;
+            const area2 = b2.w * b2.h;
+            return intersection / (area1 + area2 - intersection);
+        }
+        
         for(let i=0; i<allBoxes.length; i++) {
             if(marked[i]) continue;
             finalBoxes.push(allBoxes[i]);
             for(let j=i+1; j<allBoxes.length; j++) {
-                 // lazy spatial pruning across the entire stitched image
-                 if(Math.abs(allBoxes[i].x1 - allBoxes[j].x1) < 50 && Math.abs(allBoxes[i].y1 - allBoxes[j].y1) < 50) marked[j] = true;
+                 // NMS Threshold set to strict 0.15 to mimic torchvision limits on Sentinel!
+                 if (getIoU(allBoxes[i], allBoxes[j]) > 0.15) {
+                     marked[j] = true;
+                 }
             }
         }
         
